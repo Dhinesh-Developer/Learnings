@@ -1,0 +1,10 @@
+| Rank | Pattern   | Type       | Why Important                   |
+| ---- | --------- | ---------- | ------------------------------- |
+| 1    | Singleton | Creational | MOST ASKED (Spring, DB, Logger) |
+| 2    | Factory   | Creational | Object creation logic           |
+| 3    | Strategy  | Behavioral | Runtime algorithm change        |
+| 4    | Observer  | Behavioral | Event-driven systems            |
+| 5    | Builder   | Creational | Complex object creation         |
+| 6    | Adapter   | Structural | Integration between systems     |
+| 7    | Decorator | Structural | Add features dynamically        |
+
