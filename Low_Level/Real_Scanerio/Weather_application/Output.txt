@@ -1,0 +1,36 @@
+[+] Observer Registered: CurrentConditionsDisplay
+[+] Observer Registered: ForecastDisplay
+
+----> Initial Weather Update
+
+Weather readings updated!
+Saving weather data...
+Current Weather Conditions:
+Temperature: 80.0
+Humidity: 65.0
+Pressure: 30.4
+Updating weather analytics...
+Forecast Details:
+Rain Probability, Temperature Trends, and Weather Events Analysis
+
+----> Second Weather Update
+
+Weather readings updated!
+Saving weather data...
+Current Weather Conditions:
+Temperature: 82.0
+Humidity: 70.0
+Pressure: 29.2
+Updating weather analytics...
+Forecast Details:
+Rain Probability, Temperature Trends, and Weather Events Analysis
+[-] Observer Removed: ForecastDisplay
+
+----> Third Weather Update
+
+Weather readings updated!
+Saving weather data...
+Current Weather Conditions:
+Temperature: 70.0
+Humidity: 21.0
+Pressure: 29.2
