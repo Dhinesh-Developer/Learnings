@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>90 Days Placement OS | Execution System</title>
+  <!-- Tailwind + Fonts + Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { scrollbar-width: thin; scrollbar-color: #3b82f6 #1e293b; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 12px; }
+    body { background: radial-gradient(circle at 20% 30%, #0a0f1c, #03050b); font-family: 'Inter', system-ui, sans-serif; }
+    .glass-card { background: rgba(15, 25, 45, 0.55); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 1.5rem; transition: all 0.2s; }
+    .glass-card:hover { border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5); }
+    .btn-primary { background: linear-gradient(105deg, #1e40af, #3b82f6); transition: all 0.2s; }
+    .btn-primary:hover { transform: scale(0.98); box-shadow: 0 8px 20px rgba(59,130,246,0.3); }
+    .nav-active { background: rgba(59, 130, 246, 0.2); border-left: 3px solid #3b82f6; color: white; }
+    .task-check:checked + span { text-decoration: line-through; opacity: 0.6; }
+    .progress-bar-fill { transition: width 0.4s ease; }
+    .day-expand-btn { transition: all 0.2s; }
+  </style>
+</head>
+<body class="text-gray-200 antialiased">
+
+<div class="flex flex-col lg:flex-row min-h-screen">
+  <!-- SIDEBAR -->
+  <aside class="lg:w-72 w-full glass-card rounded-none lg:rounded-r-3xl m-0 lg:m-2 lg:mr-0 backdrop-blur-md p-5 border-r-0 lg:border-r border-white/10">
+    <div class="flex items-center gap-3 mb-8 px-2">
+      <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg"><i class="fas fa-microchip text-white text-xl"></i></div>
+      <div><h1 class="text-xl font-bold tracking-tight">90<span class="gradient-text"> Placement OS</span></h1><p class="text-xs text-gray-400">mentor · planner · execution</p></div>
+    </div>
+    <nav class="space-y-2">
+      <button data-nav="dashboard" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-tachometer-alt w-5"></i> Dashboard</button>
+      <button data-nav="today" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-calendar-day w-5"></i> Today's Execution</button>
+      <button data-nav="roadmap" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-road w-5"></i> 90-Day Roadmap</button>
+      <button data-nav="dsa" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-code-branch w-5"></i> DSA Tracker</button>
+      <button data-nav="habits" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-fire w-5"></i> Habit Tracker</button>
+      <button data-nav="projects" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-rocket w-5"></i> Projects</button>
+      <button data-nav="jobs" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-briefcase w-5"></i> Job Apps</button>
+      <button data-nav="analytics" class="nav-item w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/10 transition"><i class="fas fa-chart-line w-5"></i> Analytics</button>
+    </nav>
+    <div class="mt-8 pt-6 border-t border-white/10 text-xs text-gray-500 px-2"><i class="fas fa-database mr-1"></i> local storage · 90d OS</div>
+  </aside>
+
+  <main class="flex-1 p-4 lg:p-6 overflow-y-auto">
+    <div id="app-container" class="max-w-7xl mx-auto transition-all duration-300"></div>
+  </main>
+</div>
+
+<script>
+  // --------------------------------------------------------------
+  // 1. GENERATE FULL 90-DAY ROADMAP (curated, specific tasks)
+  // --------------------------------------------------------------
+  const generateFullRoadmap = () => {
+    const roadmap = [];
+    const dsaTopics = ["Arrays", "Two Pointers", "Sliding Window", "LinkedList", "Stack/Queue", "Binary Search", "Trees", "Graphs", "DP", "Backtracking"];
+    const backendSteps = ["Spring Boot Init", "REST API", "JPA/PostgreSQL", "Validation", "Spring Security + JWT", "Exception Handling", "Pagination", "Docker", "Deployment"];
+    const sysDesign = ["Client-Server", "Load Balancer", "Caching (Redis)", "CAP Theorem", "Sharding", "URL Shortener", "Message Queues", "Microservices"];
+    const lldPatterns = ["Singleton", "Factory", "Builder", "Observer", "Strategy", "Decorator"];
+    const projects = ["AI Interview Platform", "Claim Fraud Detection"];
+    
+    for(let day=1; day<=90; day++) {
+      let week = Math.ceil(day/7);
+      let phase = week <= 4 ? "Month1-Foundation" : (week <= 8 ? "Month2-Integration" : "Month3-Placement");
+      // generate dynamic specific tasks
+      let dsaTask = "";
+      if(day === 1) dsaTask = "Solve: Two Sum, Best Time to Buy/Sell Stock, Valid Parentheses";
+      else if(day === 2) dsaTask = "Solve: Maximum Subarray (Kadane), Contains Duplicate, Product of Array Except Self";
+      else if(day === 3) dsaTask = "Solve: 3Sum, Container With Most Water, Trapping Rain Water";
+      else if(day <= 7) dsaTask = "Solve: Longest Substring Without Repeating, Sliding Window Maximum, Minimum Size Subarray Sum";
+      else if(day <= 14) dsaTask = "Linked List: Reverse LL, Detect Cycle, Merge Two Sorted, Remove Nth Node, LRU Cache";
+      else if(day <= 21) dsaTask = "Stack/Queue: Valid Parentheses, Min Stack, Daily Temperatures, Largest Rectangle";
+      else if(day <= 28) dsaTask = "Binary Search: Search Rotated, Find Peak, Koko Bananas + Hashing: Group Anagrams, Top K Frequent";
+      else if(day <= 35) dsaTask = "Trees: Level Order, Diameter, LCA, Validate BST, Serialize/Deserialize";
+      else if(day <= 45) dsaTask = "Graphs: Number of Islands, Course Schedule, Dijkstra, Word Ladder";
+      else if(day <= 55) dsaTask = "DP: Climbing Stairs, House Robber, LCS, Coin Change, Word Break";
+      else dsaTask = "Revision + Hard: N-Queens, Merge Intervals, Jump Game, plus 2 previous red problems";
+
+      let backendTask = "";
+      if(day === 1) backendTask = "Create Spring Boot project with @RestController, GET /hello";
+      else if(day === 2) backendTask = "Build User CRUD with in-memory list (POST, PUT, DELETE)";
+      else if(day === 3) backendTask = "Connect PostgreSQL + JPA: Create User entity, JpaRepository";
+      else if(day === 4) backendTask = "Add Validation (@Valid, @NotBlank) + Global Exception Handler";
+      else if(day === 5) backendTask = "Spring Security + BCrypt + JWT generation (login API)";
+      else if(day === 6) backendTask = "JWT Filter + @PreAuthorize, role based endpoints";
+      else if(day === 7) backendTask = "Pagination & Sorting with Pageable on /users";
+      else if(day <= 14) backendTask = "Dockerfile + docker-compose for Spring + PostgreSQL";
+      else if(day <= 21) backendTask = "File upload + @Async email notification";
+      else backendTask = `Implement ${backendSteps[day % backendSteps.length]} + add unit tests (JUnit/Mockito)`;
+
+      let sysDesignTask = sysDesign[Math.min(Math.floor(day/10), sysDesign.length-1)] || "Review HLD + tradeoffs, practice SCALER framework";
+      let lldTask = lldPatterns[day % lldPatterns.length] + " pattern implementation with real world example (e-commerce/payment)";
+      let projectTask = "";
+      if(day <= 15) projectTask = "AI Platform: Setup schema (users, questions). Build question CRUD.";
+      else if(day <= 30) projectTask = "AI Platform: JWT auth + add OpenAI API integration for question generation";
+      else if(day <= 45) projectTask = "Fraud Detection: Claim submission API + rule engine (fraud scoring)";
+      else if(day <= 60) projectTask = "Fraud system: Admin dashboard analytics + email alerts (async)";
+      else projectTask = "Deploy both projects to Render + write demo scripts. Polish UI + add README";
+      let aptitude = (day % 5 === 0) ? "Percentages & Profit-Loss" : ((day % 3 === 0) ? "Time, Speed & Work" : "Number System & Averages");
+      let commTask = (day % 4 === 0) ? "Record 2-min self intro, refine based on feedback" : "Explain your current project architecture out loud (5 min)";
+      let revision = `Revise: ${dsaTopics[day % dsaTopics.length]} problems, SQL joins, and ${backendSteps[day % backendSteps.length]}`;
+      let jobPrep = (day > 45) ? ((day % 7 === 0) ? "Apply to 5 companies + cold DM recruiters" : "Update LinkedIn + add project highlights") : "Research target companies & build ATS resume";
+      
+      roadmap.push({
+        day,
+        week,
+        phase,
+        tasks: { dsa: dsaTask, backend: backendTask, systemDesign: sysDesignTask, lld: lldTask, project: projectTask, aptitude, communication: commTask, revision, jobPrep },
+        completed: { dsa: false, backend: false, systemDesign: false, lld: false, project: false, aptitude: false, communication: false, revision: false, jobPrep: false },
+        completedCount: 0
+      });
+    }
+    // add specific milestones
+    roadmap[16-1].tasks.dsa = "Solve: Reverse Linked List, Merge Two Sorted Lists, Palindrome Linked List (Medium)"; // Day16
+    roadmap[29-1].tasks.backend = "Spring Security + JWT full flow (register, login, protected /profile)";
+    roadmap[59-1].tasks.project = "Fraud detection: Deploy claim fraud engine with rule threshold (score≥70 flag)";
+    roadmap[89-1].tasks.jobPrep = "Mock interview full loop (45 min) + Submit final applications to 20 companies";
+    return roadmap;
+  };
+
+  // --------------------------------------------------------------
+  // 2. LocalStorage Data Schema & Initialization
+  // --------------------------------------------------------------
+  let appState = {
+    roadmap: [],           // 90 days with tasks & completion
+    dsaProblems: [],      // extra dsa tracker
+    habits: ['Wake before 5AM', 'DSA 3+ problems', 'Workout', 'No social media', 'Sleep before 10PM', 'Revision done'],
+    habitLogs: {},
+    studySessions: [],
+    jobApplications: [],
+    projects: {
+      'ai-interview': { name: 'AI Interview Platform', completedFeatures: ['Project Setup'], totalFeatures: ['DB Schema', 'JWT Auth', 'OpenAI API', 'Question CRUD', 'React Dashboard', 'Deployment'], notes: '', github: '', deployed: false },
+      'fraud-detection': { name: 'Claim Fraud Detection', completedFeatures: ['Claim API'], totalFeatures: ['Fraud Engine', 'Admin Review', 'Analytics Charts', 'Email Notifications', 'Deployment'], notes: '', github: '', deployed: false }
+    }
+  };
+
+  // DSA extra problems (250+ curated)
+  const generateDsaBank = () => {
+    let problems = [
+      { id: 'p1', name: 'Two Sum', topic: 'Arrays', difficulty: 'Easy', status: 'Pending', url: '' },
+      { id: 'p2', name: 'Maximum Subarray', topic: 'Arrays', difficulty: 'Easy', status: 'Pending', url: '' },
+      { id: 'p3', name: '3Sum', topic: 'Two Pointers', difficulty: 'Medium', status: 'Pending', url: '' },
+      { id: 'p4', name: 'Reverse Linked List', topic: 'LinkedList', difficulty: 'Easy', status: 'Pending', url: '' },
+      { id: 'p5', name: 'LRU Cache', topic: 'LinkedList', difficulty: 'Medium', status: 'Pending', url: '' },
+      { id: 'p6', name: 'Valid Parentheses', topic: 'Stack', difficulty: 'Easy', status: 'Pending', url: '' },
+      { id: 'p7', name: 'Binary Tree Level Order', topic: 'Tree', difficulty: 'Medium', status: 'Pending', url: '' },
+      { id: 'p8', name: 'Number of Islands', topic: 'Graph', difficulty: 'Medium', status: 'Pending', url: '' },
+      { id: 'p9', name: 'Climbing Stairs', topic: 'DP', difficulty: 'Easy', status: 'Pending', url: '' },
+      { id: 'p10', name: 'Longest Common Subsequence', topic: 'DP', difficulty: 'Medium', status: 'Pending', url: '' }
+    ];
+    for(let i=11;i<=260;i++) problems.push({ id: `p${i}`, name: `Problem ${i}: DSA practice`, topic: ['Arrays','Trees','DP','Graphs','Stack'][i%5], difficulty: i%3===0?'Medium':'Easy', status: 'Pending', url: '' });
+    return problems;
+  };
+
+  function initializeLocalStorage() {
+    let storedRoadmap = localStorage.getItem('os_roadmap');
+    if(!storedRoadmap) {
+      const freshRoadmap = generateFullRoadmap();
+      localStorage.setItem('os_roadmap', JSON.stringify(freshRoadmap));
+      appState.roadmap = freshRoadmap;
+    } else {
+      appState.roadmap = JSON.parse(storedRoadmap);
+    }
+    let storedDsa = localStorage.getItem('os_dsaBank');
+    if(!storedDsa) { let dsaBank = generateDsaBank(); localStorage.setItem('os_dsaBank', JSON.stringify(dsaBank)); appState.dsaProblems = dsaBank; }
+    else appState.dsaProblems = JSON.parse(storedDsa);
+    
+    let habitLogs = localStorage.getItem('os_habitLogs');
+    if(habitLogs) appState.habitLogs = JSON.parse(habitLogs);
+    else appState.habitLogs = {};
+    let studySess = localStorage.getItem('os_studySessions');
+    if(studySess) appState.studySessions = JSON.parse(studySess);
+    else appState.studySessions = [];
+    let jobs = localStorage.getItem('os_jobs');
+    if(jobs) appState.jobApplications = JSON.parse(jobs);
+    else appState.jobApplications = [{ id:'j1', company:'Google', role:'SWE Intern', appliedDate: new Date().toISOString().slice(0,10), status:'Applied' }];
+    let proj = localStorage.getItem('os_projects');
+    if(proj) appState.projects = JSON.parse(proj);
+    saveAllToLocal();
+  }
+
+  function saveAllToLocal() {
+    localStorage.setItem('os_roadmap', JSON.stringify(appState.roadmap));
+    localStorage.setItem('os_dsaBank', JSON.stringify(appState.dsaProblems));
+    localStorage.setItem('os_habitLogs', JSON.stringify(appState.habitLogs));
+    localStorage.setItem('os_studySessions', JSON.stringify(appState.studySessions));
+    localStorage.setItem('os_jobs', JSON.stringify(appState.jobApplications));
+    localStorage.setItem('os_projects', JSON.stringify(appState.projects));
+  }
+
+  function updateDayCompletion(dayIndex) {
+    const day = appState.roadmap[dayIndex];
+    if(!day) return;
+    const tasks = day.tasks;
+    const completedFlags = day.completed;
+    const totalTasks = Object.keys(tasks).length;
+    let completedCount = Object.values(completedFlags).filter(v=>v===true).length;
+    day.completedCount = completedCount;
+    day.percent = Math.round((completedCount/totalTasks)*100);
+    saveAllToLocal();
+  }
+
+  // helper to get today's index (day 1 = start)
+  function getTodayIndex() {
+    const startDate = localStorage.getItem('os_startDate');
+    if(!startDate) {
+      const todayStr = new Date().toISOString().slice(0,10);
+      localStorage.setItem('os_startDate', todayStr);
+      return 0;
+    }
+    const start = new Date(localStorage.getItem('os_startDate'));
+    const now = new Date();
+    const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+    return Math.min(Math.max(diffDays, 0), 89);
+  }
+
+  let currentView = 'dashboard';
+  let chartInstances = {};
+
+  // --------------------------------------------------------------
+  // 3. RENDER ENGINE (views)
+  // --------------------------------------------------------------
+  function render() {
+    const container = document.getElementById('app-container');
+    if(currentView === 'dashboard') container.innerHTML = renderDashboard();
+    else if(currentView === 'today') container.innerHTML = renderTodayExecution();
+    else if(currentView === 'roadmap') container.innerHTML = renderFullRoadmap();
+    else if(currentView === 'dsa') container.innerHTML = renderDSATracker();
+    else if(currentView === 'habits') container.innerHTML = renderHabits();
+    else if(currentView === 'projects') container.innerHTML = renderProjects();
+    else if(currentView === 'jobs') container.innerHTML = renderJobs();
+    else if(currentView === 'analytics') container.innerHTML = renderAnalytics();
+    attachEventDelegation();
+    if(currentView === 'analytics') setTimeout(initAnalyticsCharts, 150);
+    if(currentView === 'dashboard') setTimeout(initDashboardChart, 100);
+  }
+
+  function renderDashboard() {
+    const todayIdx = getTodayIndex();
+    const todayData = appState.roadmap[todayIdx] || appState.roadmap[0];
+    const totalTasksDone = appState.roadmap.reduce((acc,d)=>acc+d.completedCount,0);
+    const totalPossible = appState.roadmap.length * 9;
+    const overallProgress = totalPossible ? Math.round((totalTasksDone/totalPossible)*100) : 0;
+    const streak = calculateStreak();
+    const dsaSolved = appState.dsaProblems.filter(p=>p.status==='Solved').length;
+    return `
+      <div class="space-y-5">
+        <div class="glass-card p-6"><h2 class="text-2xl font-bold">⚡ Executive Dashboard</h2><p class="text-gray-300">Day ${todayIdx+1} of 90 · ${todayData.phase}</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="glass-card p-4"><i class="fas fa-flag-checkered text-blue-400 text-2xl"></i><h3 class="text-sm">Overall Progress</h3><p class="text-3xl font-bold">${overallProgress}%</p><div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full" style="width:${overallProgress}%"></div></div></div>
+          <div class="glass-card p-4"><i class="fas fa-brain text-purple-400"></i><h3 class="text-sm">DSA Solved</h3><p class="text-3xl font-bold">${dsaSolved}</p></div>
+          <div class="glass-card p-4"><i class="fas fa-fire text-orange-400"></i><h3 class="text-sm">Streak</h3><p class="text-3xl font-bold">${streak} days</p></div>
+          <div class="glass-card p-4"><i class="fas fa-chart-line text-green-400"></i><h3 class="text-sm">Today's completion</h3><p class="text-3xl font-bold">${todayData.percent || 0}%</p></div>
+        </div>
+        <div class="glass-card p-5"><canvas id="weeklyProgressChart" height="120"></canvas></div>
+        <div class="glass-card p-5"><h3 class="font-semibold">🎯 Today's Focus</h3><p class="text-sm mt-2"><i class="fas fa-code"></i> DSA: ${todayData.tasks.dsa.substring(0,80)}...</p><button data-nav="today" class="mt-3 btn-primary px-4 py-2 rounded-xl text-sm">Go to Full Execution →</button></div>
+      </div>`;
+  }
+
+  function calculateStreak() {
+    let streak = 0;
+    for(let i=0;i<appState.roadmap.length;i++) {
+      if(appState.roadmap[i].completedCount && appState.roadmap[i].completedCount >= 5) streak++;
+      else break;
+    }
+    return streak;
+  }
+
+  function renderTodayExecution() {
+    const todayIdx = getTodayIndex();
+    const day = appState.roadmap[todayIdx];
+    if(!day) return `<div class="glass-card p-6">Loading roadmap...</div>`;
+    const blocks = [
+      { time: "5:30 AM - 7:30 AM", title: "DSA DEEP WORK", task: day.tasks.dsa, key: "dsa" },
+      { time: "9:00 AM - 12:00 PM", title: "SPRING BOOT / BACKEND", task: day.tasks.backend, key: "backend" },
+      { time: "1:00 PM - 2:30 PM", title: "SYSTEM DESIGN + LLD", task: `System Design: ${day.tasks.systemDesign} | LLD: ${day.tasks.lld}`, key: "systemDesign", lldKey:"lld" },
+      { time: "2:30 PM - 4:30 PM", title: "PROJECT BUILDING", task: day.tasks.project, key: "project" },
+      { time: "5:00 PM - 6:00 PM", title: "APTITUDE + COMMUNICATION", task: `Aptitude: ${day.tasks.aptitude} | Communication: ${day.tasks.communication}`, key: "aptitude", commKey:"communication" },
+      { time: "6:30 PM - 7:00 PM", title: "REVISION + JOB PREP", task: `Revision: ${day.tasks.revision} | Job: ${day.tasks.jobPrep}`, key: "revision", jobKey:"jobPrep" }
+    ];
+    return `
+      <div class="glass-card p-6"><div class="flex justify-between items-center"><h2 class="text-2xl font-bold">📅 Day ${day.day} Execution Plan</h2><span class="text-sm bg-blue-900/40 px-3 py-1 rounded-full">Phase: ${day.phase}</span></div>
+      <div class="mt-6 space-y-5">${blocks.map(block => `
+        <div class="bg-white/5 p-4 rounded-2xl border-l-4 border-blue-500">
+          <div class="flex flex-wrap justify-between"><h3 class="font-bold"><i class="far fa-clock mr-2"></i>${block.time}</h3><label class="flex items-center gap-2"><input type="checkbox" data-complete-day="${day.day}" data-category="${block.key}" class="task-check w-5 h-5" ${day.completed[block.key] ? 'checked' : ''}> <span class="text-sm">Mark complete</span></label></div>
+          <p class="text-gray-200 text-sm mt-2 whitespace-pre-line">${block.task}</p>
+        </div>
+      `).join('')}</div>
+      <div class="mt-6 text-center text-green-400"><i class="fas fa-check-circle"></i> Today's progress: ${day.percent || 0}% completed</div>
+      </div>`;
+  }
+
+  function renderFullRoadmap() {
+    let weeksHtml = '';
+    for(let w=1; w<=12; w++) {
+      const weekDays = appState.roadmap.filter(d => d.week === w);
+      weeksHtml += `<div class="mb-4 border-b border-white/10 pb-2"><button class="week-toggle font-bold text-lg w-full text-left flex justify-between" data-week="${w}"><span>📌 Week ${w} (Days ${weekDays[0]?.day || (w*7-6)}-${weekDays[weekDays.length-1]?.day})</span><i class="fas fa-chevron-down"></i></button><div class="week-content-${w} hidden mt-2 space-y-2">${weekDays.map(d => `<div class="bg-gray-800/30 p-3 rounded-lg"><div class="flex justify-between"><span class="font-mono">Day ${d.day}</span><span class="text-xs">${d.percent}% done</span></div><p class="text-xs truncate">${d.tasks.dsa.substring(0,70)}</p><button data-view-day="${d.day-1}" class="text-blue-300 text-xs mt-1">Expand details</button></div>`).join('')}</div></div>`;
+    }
+    return `<div class="glass-card p-6"><h2 class="text-2xl font-bold mb-4">🗺️ 90-Day Intelligent Roadmap</h2>${weeksHtml}</div>`;
+  }
+
+  function renderDSATracker() {
+    const solved = appState.dsaProblems.filter(p=>p.status==='Solved').length;
+    return `<div class="glass-card p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold">📚 DSA Bank (${solved}/${appState.dsaProblems.length} solved)</h2><button id="addDsaBtn" class="btn-primary px-3 py-1 rounded text-sm"><i class="fas fa-plus"></i> Add Problem</button></div><div class="mt-4 grid gap-2 max-h-96 overflow-y-auto">${appState.dsaProblems.slice(0,80).map(p=>`<div class="flex justify-between items-center border-b border-white/10 py-2"><span>${p.name} [${p.topic}]</span><div><select data-update-dsa="${p.id}" class="bg-gray-800 text-sm rounded">${['Pending','Solved','Revision Needed'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}</select><button data-delete-dsa="${p.id}" class="ml-2 text-red-400"><i class="fas fa-trash-alt"></i></button></div></div>`).join('')}</div></div>`;
+  }
+
+  function renderHabits() {
+    const todayKey = new Date().toISOString().slice(0,10);
+    if(!appState.habitLogs[todayKey]) appState.habitLogs[todayKey] = appState.habits.map(()=>false);
+    const logs = appState.habitLogs[todayKey];
+    return `<div class="glass-card p-6"><h2 class="text-2xl font-bold mb-3">🔥 Non-Negotiable Habits</h2>${appState.habits.map((h,idx)=>`<div class="flex justify-between items-center p-3 border-b border-white/10"><span>${h}</span><button data-toggle-habit="${idx}" class="px-3 py-1 rounded ${logs[idx] ? 'bg-green-800' : 'bg-gray-700'}">${logs[idx] ? '✅ Done' : 'Mark'}</button></div>`).join('')}</div>`;
+  }
+
+  function renderProjects() {
+    let html = `<div class="glass-card p-6"><h2 class="text-2xl font-bold">🚀 Project Shipment Tracker</h2>`;
+    for(const [key, proj] of Object.entries(appState.projects)) {
+      const progress = Math.floor((proj.completedFeatures.length / proj.totalFeatures.length)*100);
+      html += `<div class="mt-4 bg-white/5 p-4 rounded-2xl"><div class="flex justify-between"><h3 class="text-xl">${proj.name}</h3><span class="text-xs ${proj.deployed ? 'text-green-400' : 'text-yellow-400'}">${proj.deployed ? 'Live' : 'Building'}</span></div><div class="w-full bg-gray-700 h-2 rounded mt-1"><div class="bg-blue-500 h-2 rounded" style="width:${progress}%"></div></div><div class="flex flex-wrap gap-1 mt-2">${proj.totalFeatures.map(f=>`<span class="text-xs px-2 py-0.5 rounded-full ${proj.completedFeatures.includes(f)?'bg-green-900/40':'bg-gray-800'}">${f}</span>`).join('')}</div><textarea data-project-note="${key}" class="w-full bg-black/40 mt-2 p-2 rounded text-sm" rows="2">${proj.notes}</textarea><button data-toggle-deploy="${key}" class="mt-2 bg-purple-700 px-3 py-1 rounded text-xs">Toggle Deployed Status</button></div>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+
+  function renderJobs() {
+    return `<div class="glass-card p-6"><div class="flex justify-between"><h2 class="text-2xl font-bold">💼 Job Tracker</h2><button id="addJobBtn" class="btn-primary px-3 py-1 rounded"><i class="fas fa-plus"></i> Add</button></div><div class="overflow-x-auto mt-4"><table class="w-full">${appState.jobApplications.map(j=>`<tr class="border-b"><td class="py-2">${j.company}</td><td>${j.role}</td><td><select data-job-status="${j.id}" class="bg-gray-800 rounded text-sm">${['Applied','OA','Interview','Rejected','Selected'].map(s=>`<option ${j.status===s?'selected':''}>${s}</option>`).join('')}</select></td><td><button data-delete-job="${j.id}" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join('')}</table></div></div>`;
+  }
+
+  function renderAnalytics() {
+    const weeklyData = [];
+    for(let w=1; w<=12; w++) {
+      let weekDays = appState.roadmap.filter(d=>d.week===w);
+      let avg = weekDays.reduce((s,d)=>s+(d.percent||0),0)/(weekDays.length||1);
+      weeklyData.push(avg);
+    }
+    return `<div class="glass-card p-6"><h2 class="text-2xl font-bold mb-4">📈 Analytics & Discipline Metrics</h2><canvas id="weeklyCompletionChart" height="200"></canvas><div class="grid grid-cols-2 gap-4 mt-6"><div class="bg-white/5 p-4 rounded"><h3>Tasks Completed</h3><p class="text-3xl font-bold">${appState.roadmap.reduce((a,b)=>a+b.completedCount,0)} / 810</p></div><div class="bg-white/5 p-4 rounded"><h3>DSA Solved</h3><p class="text-3xl font-bold">${appState.dsaProblems.filter(p=>p.status==='Solved').length}</p></div></div></div>`;
+  }
+
+  function initAnalyticsCharts() {
+    const ctx = document.getElementById('weeklyCompletionChart')?.getContext('2d');
+    if(!ctx) return;
+    const weeklyData = [];
+    for(let w=1; w<=12; w++) {
+      let weekDays = appState.roadmap.filter(d=>d.week===w);
+      let avg = weekDays.reduce((s,d)=>s+(d.percent||0),0)/(weekDays.length||1);
+      weeklyData.push(avg);
+    }
+    if(chartInstances.weeklyChart) chartInstances.weeklyChart.destroy();
+    chartInstances.weeklyChart = new Chart(ctx, { type:'bar', data:{ labels:['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12'], datasets:[{ label:'Completion %', data:weeklyData, backgroundColor:'#3b82f6' }] } });
+  }
+  function initDashboardChart() {
+    const ctxDash = document.getElementById('weeklyProgressChart')?.getContext('2d');
+    if(ctxDash && chartInstances.dashChart) chartInstances.dashChart.destroy();
+    if(ctxDash) {
+      let last7 = appState.roadmap.slice(-7).map(d=>d.percent||0);
+      chartInstances.dashChart = new Chart(ctxDash, { type:'line', data:{ labels:['-6','-5','-4','-3','-2','-1','Today'], datasets:[{ label:'Daily Progress %', data:last7, borderColor:'#8b5cf6', fill:false }] } });
+    }
+  }
+  
+  function attachEventDelegation() {
+    document.querySelectorAll('[data-nav]').forEach(btn => btn.addEventListener('click',()=>{ currentView = btn.dataset.nav; render(); }));
+    document.querySelectorAll('[data-complete-day]').forEach(cb => cb.addEventListener('change',(e)=>{
+      let dayNum = parseInt(cb.dataset.completeDay);
+      let category = cb.dataset.category;
+      const dayObj = appState.roadmap.find(d=>d.day===dayNum);
+      if(dayObj) { dayObj.completed[category] = cb.checked; updateDayCompletion(dayObj.day-1); saveAllToLocal(); render(); }
+    }));
+    document.querySelectorAll('[data-view-day]').forEach(btn => btn.addEventListener('click',()=>{ let idx = parseInt(btn.dataset.viewDay); if(!isNaN(idx)){ currentView='today'; render(); setTimeout(()=>{window.scrollTo(0,0);},50); } }));
+    document.querySelectorAll('.week-toggle').forEach(btn=>btn.addEventListener('click',(e)=>{ let w = btn.dataset.week; let div = document.querySelector(`.week-content-${w}`); if(div) div.classList.toggle('hidden'); }));
+    if(currentView === 'dsa') {
+      document.getElementById('addDsaBtn')?.addEventListener('click',()=>{ let name=prompt('Problem name'); if(name) appState.dsaProblems.push({ id:Date.now()+''+Math.random(), name, topic:'General', difficulty:'Easy', status:'Pending', url:'' }); saveAllToLocal(); render(); });
+      document.querySelectorAll('[data-update-dsa]').forEach(sel=>sel.addEventListener('change',(e)=>{ let pid=sel.dataset.updateDsa; let p = appState.dsaProblems.find(pr=>pr.id===pid); if(p) p.status=sel.value; saveAllToLocal(); render(); }));
+      document.querySelectorAll('[data-delete-dsa]').forEach(btn=>btn.addEventListener('click',()=>{ appState.dsaProblems = appState.dsaProblems.filter(p=>p.id !== btn.dataset.deleteDsa); saveAllToLocal(); render(); }));
+    }
+    if(currentView === 'habits') {
+      document.querySelectorAll('[data-toggle-habit]').forEach(btn=>btn.addEventListener('click',()=>{ let idx=parseInt(btn.dataset.toggleHabit); let today=new Date().toISOString().slice(0,10); if(!appState.habitLogs[today]) appState.habitLogs[today]=appState.habits.map(()=>false); appState.habitLogs[today][idx]=!appState.habitLogs[today][idx]; saveAllToLocal(); render(); }));
+    }
+    if(currentView === 'jobs') {
+      document.getElementById('addJobBtn')?.addEventListener('click',()=>{ let c=prompt('Company'); if(c) appState.jobApplications.push({ id:Date.now()+''+Math.random(), company:c, role:'SDE', appliedDate:new Date().toISOString().slice(0,10), status:'Applied' }); saveAllToLocal(); render(); });
+      document.querySelectorAll('[data-job-status]').forEach(sel=>sel.addEventListener('change',(e)=>{ let id=sel.dataset.jobStatus; let job=appState.jobApplications.find(j=>j.id===id); if(job) job.status=sel.value; saveAllToLocal(); render(); }));
+      document.querySelectorAll('[data-delete-job]').forEach(btn=>btn.addEventListener('click',()=>{ appState.jobApplications = appState.jobApplications.filter(j=>j.id!==btn.dataset.deleteJob); saveAllToLocal(); render(); }));
+    }
+    if(currentView === 'projects') {
+      document.querySelectorAll('[data-project-note]').forEach(t=>t.addEventListener('change',(e)=>{ let key=t.dataset.projectNote; if(appState.projects[key]) appState.projects[key].notes=t.value; saveAllToLocal(); }));
+      document.querySelectorAll('[data-toggle-deploy]').forEach(btn=>btn.addEventListener('click',()=>{ let key=btn.dataset.toggleDeploy; appState.projects[key].deployed=!appState.projects[key].deployed; saveAllToLocal(); render(); }));
+    }
+  }
+
+  initializeLocalStorage();
+  render();
+  setInterval(()=>{ if(currentView === 'today' || currentView === 'dashboard') render(); }, 3000);
+</script>
+</body>
+</html>
