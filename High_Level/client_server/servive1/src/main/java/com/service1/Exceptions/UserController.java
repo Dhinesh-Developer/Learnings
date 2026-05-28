@@ -28,10 +28,10 @@ public class UserController {
         throw new IllegalArgumentException("inappropriate arguments passed");
     }
 
-    //  @GetMapping(path = "/get-user")
-    // public String getUsers(){
-    //     throw new CustomException(HttpStatus.BAD_REQUEST,"request is not Correct, UserID is missing");
-    // }
+    @GetMapping(path = "/get-user-data")
+    public String getUsers(){
+        throw new CustomException(HttpStatus.BAD_REQUEST,"request is not Correct, handled by global exception handler");
+    }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<?> handleCustomException(CustomException ex){
