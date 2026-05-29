@@ -1,1 +1,766 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Placement OS · Dynamic Command Center</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --surface3: #22222f;
+      --border: rgba(255, 255, 255, 0.08);
+      --border2: rgba(255, 255, 255, 0.14);
+      --accent: #7f77dd;
+      --accent2: #1d9e75;
+      --accent3: #d85a30;
+      --accent4: #ef9f27;
+      --text: #f0eeff;
+      --text2: #a09db8;
+      --text3: #5a576e;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Syne', sans-serif;
+      --red: #e24b4a;
+      --green: #639922;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* navigation */
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      overflow-x: auto;
+      scrollbar-width: thin;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-tab {
+      padding: 12px 18px;
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 500;
+      color: var(--text3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.15s;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .nav-tab:hover,
+    .nav-tab.active {
+      color: var(--accent);
+      background: rgba(127, 119, 221, 0.06);
+    }
+
+    .nav-tab.active {
+      border-bottom-color: var(--accent);
+    }
+
+    .page {
+      display: none;
+      padding: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* cards & grids */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-family: var(--mono);
+      background: var(--surface3);
+      color: var(--text2);
+    }
+
+    .badge-green {
+      background: rgba(29, 158, 117, 0.2);
+      color: #5dcaa5;
+    }
+
+    .badge-amber {
+      background: rgba(239, 159, 39, 0.2);
+      color: #fac775;
+    }
+
+    .badge-red {
+      background: rgba(226, 75, 74, 0.2);
+      color: #f09595;
+    }
+
+    .badge-purple {
+      background: rgba(127, 119, 221, 0.2);
+      color: #afa9ec;
+    }
+
+    /* habit + progress */
+    .progress-bar {
+      height: 6px;
+      background: var(--surface3);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--accent);
+      width: 0%;
+    }
+
+    .habit-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .habit-name {
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .habit-toggle {
+      width: 40px;
+      height: 20px;
+      background: var(--surface3);
+      border-radius: 30px;
+      cursor: pointer;
+      position: relative;
+      transition: 0.2s;
+    }
+
+    .habit-toggle.active {
+      background: var(--accent2);
+    }
+
+    .habit-toggle::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: 0.2s;
+    }
+
+    .habit-toggle.active::after {
+      left: 22px;
+    }
+
+    .day-score {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+
+    .pill-done {
+      background: rgba(29, 158, 117, 0.2);
+      color: #5dcaa5;
+    }
+
+    button {
+      background: rgba(127, 119, 221, 0.2);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-family: var(--mono);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    input, select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .dsa-row {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-tab active" data-page="dashboard">📊 Dashboard</div>
+  <div class="nav-tab" data-page="habits">✅ Habits OS</div>
+  <div class="nav-tab" data-page="dsa-tracker">⟨⟩ DSA Tracker</div>
+  <div class="nav-tab" data-page="applications">💼 Applications</div>
+  <div class="nav-tab" data-page="daily-planner">📅 Daily Planner</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page active" id="dashboard">
+  <div style="margin-bottom: 20px;">
+    <div style="font-family: var(--mono); font-size: 10px; color: var(--accent);">PLACEMENT OS · LIVE</div>
+    <div style="font-size: 28px; font-weight: 800;">Execution Command Center</div>
+    <div style="color: var(--text2);">90-day dynamic · realtime progress</div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 16px;">
+    <div class="card">
+      <div class="badge badge-purple">TODAY'S SCORE</div>
+      <div class="day-score" id="todaysScoreDisplay">0/10</div>
+      <div class="progress-bar"><div class="progress-fill" id="todayScoreFill" style="width:0%"></div></div>
+      <div style="font-size: 12px; margin-top: 8px;" id="ratingMessage"></div>
+    </div>
+    <div class="card">
+      <div class="badge badge-purple">STREAK</div>
+      <div style="font-size: 32px; font-weight: 800;" id="streakDisplay">0</div>
+      <div style="font-size: 10px;">consecutive days ≥7 score</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-amber">DSA PROGRESS</div>
+    <div style="margin: 12px 0 4px; display: flex; justify-content: space-between;">
+      <span>Solved: <span id="dsaSolvedCount">0</span>/250</span>
+      <span>Mastered: <span id="dsaMasteredCount">0</span></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="dsaProgressFill" style="background: var(--accent2); width:0%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="badge badge-green">APPLICATION PIPELINE</div>
+    <div class="grid-2" style="margin-top: 12px;">
+      <div>📧 Sent: <strong id="appSent">0</strong></div>
+      <div>✅ OA Cleared: <strong id="oaCleared">0</strong></div>
+      <div>🎯 Interviews: <strong id="interviewsCount">0</strong></div>
+      <div>🏆 Offers: <strong id="offersCount">0</strong></div>
+    </div>
+    <button id="addMockAppBtn" style="margin-top: 12px;">+ Mock Application</button>
+  </div>
+</div>
+
+<!-- HABITS OS -->
+<div class="page" id="habits">
+  <div style="margin-bottom: 20px;">
+    <div style="font-size: 24px; font-weight: 800;">Daily 10 Habits</div>
+    <div style="color: var(--text2);">toggle each habit — score updates instantly</div>
+  </div>
+
+  <div id="habitsContainer" class="card"></div>
+  <div class="card">
+    <div class="badge badge-purple">REVIEW & PLAN</div>
+    <button id="resetHabitsBtn" style="margin-top: 10px;">Reset Today (new day)</button>
+    <div style="font-size: 10px; margin-top: 10px;">✔️ Streak preserved when score ≥7 yesterday</div>
+  </div>
+</div>
+
+<!-- DSA TRACKER -->
+<div class="page" id="dsa-tracker">
+  <div class="card">
+    <div class="badge badge-amber">Add / Solve DSA</div>
+    <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+      <input type="text" id="dsaName" placeholder="Problem name" style="flex:1">
+      <select id="dsaDifficulty">
+        <option value="Easy">🟢 Easy</option>
+        <option value="Medium">🟡 Medium</option>
+        <option value="Hard">🔴 Hard</option>
+      </select>
+      <button id="addDsaBtn">➕ Add</button>
+    </div>
+  </div>
+  <div id="dsaListContainer" class="card"></div>
+</div>
+
+<!-- APPLICATIONS TRACKER -->
+<div class="page" id="applications">
+  <div class="card">
+    <div class="badge badge-green">Track your job apps</div>
+    <div style="display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap;">
+      <input type="text" id="companyName" placeholder="Company" style="flex:1">
+      <select id="appStatus">
+        <option value="Sent">📤 Sent</option>
+        <option value="OA Received">📝 OA Received</option>
+        <option value="OA Cleared">✅ OA Cleared</option>
+        <option value="Interview">🎯 Interview</option>
+        <option value="Offer">🏆 Offer</option>
+        <option value="Rejected">❌ Rejected</option>
+      </select>
+      <button id="addAppBtn">➕ Add</button>
+    </div>
+  </div>
+  <div id="appListContainer"></div>
+</div>
+
+<!-- DAILY PLANNER -->
+<div class="page" id="daily-planner">
+  <div class="card">
+    <div class="badge badge-purple">Plan your focus block</div>
+    <textarea id="dailyPlanText" rows="3" style="width:100%; background: var(--surface2); border:1px solid var(--border); border-radius: 8px; padding: 12px; color: white;" placeholder="e.g. 5:30-7:30 DSA: Sliding Window Problems&#10;9:00 Spring Boot Security&#10;Project: fix JWT filter"></textarea>
+    <button id="savePlanBtn" style="margin-top: 8px;">Save Today's Plan</button>
+    <div style="margin-top: 16px;">
+      <div class="badge">📋 Today's Plan</div>
+      <div id="savedPlanPreview" style="margin-top: 8px; white-space: pre-wrap; font-family: var(--mono); font-size: 12px;"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="badge">⚡️ POWER MOVE</div>
+    <div>"Solve 3 DSA before sunrise — compound your discipline."</div>
+  </div>
+</div>
+
+<script>
+  // ---------- LOCAL STORAGE KEYS ----------
+  const STORAGE = {
+    habits: "placement_habits_today",
+    streak: "placement_streak_data",
+    dsaProblems: "placement_dsa_problems",
+    applications: "placement_applications",
+    lastDate: "placement_last_date",
+    dailyPlan: "placement_daily_plan"
+  };
+
+  // habit list
+  const HABITS_LIST = [
+    "🌅 Wake before 5AM",
+    "⟨⟩ DSA 3 problems",
+    "🍃 Backend study (90min)",
+    "🔨 Project commit",
+    "🏋️ Workout / walk",
+    "📵 No social media",
+    "🐙 GitHub commit",
+    "📖 Revision done",
+    "🛌 Sleep by 10PM",
+    "🗣 Communication practice"
+  ];
+
+  // ---------- Helper functions ----------
+  function getTodayKey() {
+    return new Date().toISOString().slice(0,10);
+  }
+
+  function loadHabits() {
+    const today = getTodayKey();
+    const stored = localStorage.getItem(STORAGE.habits);
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.date === today) return data.habits;
+      } catch(e) {}
+    }
+    // default false array
+    return new Array(HABITS_LIST.length).fill(false);
+  }
+
+  function saveHabits(habitsArray) {
+    const data = {
+      date: getTodayKey(),
+      habits: habitsArray
+    };
+    localStorage.setItem(STORAGE.habits, JSON.stringify(data));
+  }
+
+  // streak logic: checks yesterday's score and updates streak
+  function updateStreakFromYesterday() {
+    const yesterdayKey = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    const storedYesterday = localStorage.getItem(`habit_archive_${yesterdayKey}`);
+    let yesterdayScore = 0;
+    if (storedYesterday) {
+      const arr = JSON.parse(storedYesterday);
+      yesterdayScore = arr.filter(v => v === true).length;
+    } else {
+      // fallback: load today habits but compare? but proper streak needs history
+      // We'll init streak by reading from storage
+    }
+    let streak = parseInt(localStorage.getItem(STORAGE.streak) || "0");
+    const todayHabits = loadHabits();
+    const todayScore = todayHabits.filter(v=>v===true).length;
+    // only update if we are at start of day? We'll check when habits change, logic inside.
+    return { streak, todayScore };
+  }
+
+  function computeDayScore() {
+    const habits = loadHabits();
+    return habits.filter(v => v === true).length;
+  }
+
+  function updateStreakIfNeeded() {
+    let currentStreak = parseInt(localStorage.getItem(STORAGE.streak) || "0");
+    const todayScore = computeDayScore();
+    const yesterdayKey = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    const yesterdayArchive = localStorage.getItem(`habit_archive_${yesterdayKey}`);
+    let yesterdayScore = 0;
+    if (yesterdayArchive) yesterdayScore = JSON.parse(yesterdayArchive).filter(v=>v===true).length;
+    
+    // if today score >=7 and either streak==0 or yesterdayScore>=7
+    if (todayScore >= 7) {
+      if (currentStreak === 0 && yesterdayScore >= 7) currentStreak = 1;
+      else if (currentStreak === 0 && yesterdayScore < 7 && yesterdayScore !==0) currentStreak = 1;
+      else if (currentStreak > 0 && (yesterdayScore >=7 || yesterdayScore===0)) currentStreak++;
+      else if (currentStreak === 0 && yesterdayScore===0) currentStreak = 1;
+      localStorage.setItem(STORAGE.streak, currentStreak);
+    } else {
+      // score below 7: streak broken but only if we already had habits stored? we reset only if user had >0 streak and today is low
+      if (currentStreak > 0 && todayScore < 7) {
+        localStorage.setItem(STORAGE.streak, "0");
+        currentStreak = 0;
+      }
+    }
+    return currentStreak;
+  }
+
+  // archive habits at day change
+  function checkAndArchive() {
+    const today = getTodayKey();
+    const stored = localStorage.getItem(STORAGE.habits);
+    if (stored) {
+      const data = JSON.parse(stored);
+      if (data.date !== today) {
+        // archive old
+        localStorage.setItem(`habit_archive_${data.date}`, JSON.stringify(data.habits));
+        // reset habits for new day
+        const newHabits = new Array(HABITS_LIST.length).fill(false);
+        saveHabits(newHabits);
+      }
+    } else {
+      const newHabits = new Array(HABITS_LIST.length).fill(false);
+      saveHabits(newHabits);
+    }
+  }
+
+  // DSA methods
+  function loadDSAs() {
+    const raw = localStorage.getItem(STORAGE.dsaProblems);
+    if (raw) return JSON.parse(raw);
+    return [];
+  }
+
+  function saveDSAs(dsas) {
+    localStorage.setItem(STORAGE.dsaProblems, JSON.stringify(dsas));
+  }
+
+  function addDSA(name, difficulty) {
+    if (!name.trim()) return;
+    const dsas = loadDSAs();
+    dsas.push({ id: Date.now(), name, difficulty, solved: false, mastered: false, dateAdded: getTodayKey() });
+    saveDSAs(dsas);
+    renderDSAList();
+  }
+
+  function toggleDSAState(id, field) {
+    let dsas = loadDSAs();
+    const problem = dsas.find(p => p.id === id);
+    if (problem) {
+      if (field === 'solved') {
+        problem.solved = !problem.solved;
+        if (!problem.solved) problem.mastered = false;
+      } else if (field === 'mastered') {
+        problem.mastered = !problem.mastered;
+        if (problem.mastered) problem.solved = true;
+      }
+      saveDSAs(dsas);
+      renderDSAList();
+    }
+  }
+
+  function renderDSAList() {
+    const container = document.getElementById("dsaListContainer");
+    if (!container) return;
+    const dsas = loadDSAs();
+    if (dsas.length === 0) {
+      container.innerHTML = `<div class="badge">✨ Add your first LeetCode problem</div>`;
+      return;
+    }
+    let solvedCount = dsas.filter(p => p.solved).length;
+    let masteredCount = dsas.filter(p => p.mastered).length;
+    document.getElementById("dsaSolvedCount") && (document.getElementById("dsaSolvedCount").innerText = solvedCount);
+    document.getElementById("dsaMasteredCount") && (document.getElementById("dsaMasteredCount").innerText = masteredCount);
+    const percent = (solvedCount / 250) * 100;
+    if (document.getElementById("dsaProgressFill")) document.getElementById("dsaProgressFill").style.width = `${Math.min(100,percent)}%`;
+    
+    let html = `<div class="badge badge-purple">My DSA Bank (${solvedCount}/250 solved)</div>`;
+    dsas.forEach(p => {
+      html += `<div class="dsa-row" style="display:flex; justify-content:space-between; align-items:center;">
+        <div><span style="font-weight:600;">${p.name}</span> <span class="badge">${p.difficulty}</span>
+        <div style="font-size:9px;">${p.solved ? "✅ Solved" : "⬜ Open"} ${p.mastered ? "⭐ Mastered" : ""}</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button data-id="${p.id}" data-action="solve" style="background:${p.solved ? 'var(--accent2)' : 'var(--surface3)'}">${p.solved ? "Solved" : "Mark Solve"}</button>
+          <button data-id="${p.id}" data-action="master" ${!p.solved ? 'disabled' : ''} style="background:${p.mastered ? 'var(--accent4)' : 'var(--surface3)'}">⭐ Master</button>
+        </div>
+      </div>`;
+    });
+    container.innerHTML = html;
+    container.querySelectorAll("button[data-action='solve']").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = parseInt(btn.dataset.id);
+        toggleDSAState(id, 'solved');
+      });
+    });
+    container.querySelectorAll("button[data-action='master']").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = parseInt(btn.dataset.id);
+        toggleDSAState(id, 'mastered');
+      });
+    });
+  }
+
+  // Applications logic
+  function loadApps() {
+    const raw = localStorage.getItem(STORAGE.applications);
+    if (raw) return JSON.parse(raw);
+    return [];
+  }
+  function saveApps(apps) {
+    localStorage.setItem(STORAGE.applications, JSON.stringify(apps));
+  }
+  function addApplication(company, status) {
+    const apps = loadApps();
+    apps.push({ id: Date.now(), company, status, date: getTodayKey() });
+    saveApps(apps);
+    renderAppList();
+    updateAppStats();
+  }
+  function updateAppStatus(id, newStatus) {
+    let apps = loadApps();
+    const app = apps.find(a => a.id === id);
+    if (app) app.status = newStatus;
+    saveApps(apps);
+    renderAppList();
+    updateAppStats();
+  }
+  function updateAppStats() {
+    const apps = loadApps();
+    const sent = apps.filter(a => a.status === "Sent").length;
+    const oaCleared = apps.filter(a => a.status === "OA Cleared").length;
+    const interviews = apps.filter(a => a.status === "Interview").length;
+    const offers = apps.filter(a => a.status === "Offer").length;
+    document.getElementById("appSent") && (document.getElementById("appSent").innerText = sent);
+    document.getElementById("oaCleared") && (document.getElementById("oaCleared").innerText = oaCleared);
+    document.getElementById("interviewsCount") && (document.getElementById("interviewsCount").innerText = interviews);
+    document.getElementById("offersCount") && (document.getElementById("offersCount").innerText = offers);
+  }
+  function renderAppList() {
+    const container = document.getElementById("appListContainer");
+    if (!container) return;
+    const apps = loadApps();
+    if (apps.length === 0) {
+      container.innerHTML = `<div class="card">📌 No applications yet. Add your first!</div>`;
+      return;
+    }
+    let html = `<div class="card">`;
+    apps.forEach(app => {
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding:10px 0;">
+        <div><strong>${app.company}</strong><span class="badge" style="margin-left:8px;">${app.status}</span></div>
+        <select data-id="${app.id}" class="app-status-select" style="width:120px;">
+          <option ${app.status === "Sent" ? "selected" : ""}>Sent</option>
+          <option ${app.status === "OA Received" ? "selected" : ""}>OA Received</option>
+          <option ${app.status === "OA Cleared" ? "selected" : ""}>OA Cleared</option>
+          <option ${app.status === "Interview" ? "selected" : ""}>Interview</option>
+          <option ${app.status === "Offer" ? "selected" : ""}>Offer</option>
+          <option ${app.status === "Rejected" ? "selected" : ""}>Rejected</option>
+        </select>
+      </div>`;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+    document.querySelectorAll(".app-status-select").forEach(select => {
+      select.addEventListener("change", (e) => {
+        const id = parseInt(select.dataset.id);
+        updateAppStatus(id, select.value);
+      });
+    });
+  }
+  
+  // habits UI
+  function renderHabitsUI() {
+    const habits = loadHabits();
+    const container = document.getElementById("habitsContainer");
+    if (!container) return;
+    let html = `<div class="badge badge-purple">${getTodayKey()} · toggle each habit</div>`;
+    HABITS_LIST.forEach((habit, idx) => {
+      const isChecked = habits[idx];
+      html += `<div class="habit-item">
+        <span class="habit-name">${habit}</span>
+        <div class="habit-toggle ${isChecked ? 'active' : ''}" data-index="${idx}"></div>
+      </div>`;
+    });
+    html += `<div style="margin-top: 16px;"><strong>Total Score: ${habits.filter(v=>v===true).length}/10</strong></div>`;
+    container.innerHTML = html;
+    document.querySelectorAll(".habit-toggle").forEach(toggle => {
+      toggle.addEventListener("click", (e) => {
+        const index = parseInt(toggle.dataset.index);
+        let habitsArr = loadHabits();
+        habitsArr[index] = !habitsArr[index];
+        saveHabits(habitsArr);
+        renderHabitsUI();
+        updateDashboardFromHabits();
+      });
+    });
+  }
+  
+  function updateDashboardFromHabits() {
+    const score = computeDayScore();
+    document.getElementById("todaysScoreDisplay") && (document.getElementById("todaysScoreDisplay").innerText = `${score}/10`);
+    const fillPercent = (score / 10) * 100;
+    if (document.getElementById("todayScoreFill")) document.getElementById("todayScoreFill").style.width = `${fillPercent}%`;
+    let rating = score >= 9 ? "🔥 Elite" : score >= 7 ? "✅ Solid" : score >= 5 ? "⚠️ Weak" : "❌ Wasted";
+    document.getElementById("ratingMessage") && (document.getElementById("ratingMessage").innerText = rating);
+    const newStreak = updateStreakIfNeeded();
+    document.getElementById("streakDisplay") && (document.getElementById("streakDisplay").innerText = newStreak);
+    // also update dsa stats & apps stats are already
+    renderDSAList();
+  }
+  
+  // daily plan
+  function loadDailyPlan() {
+    const plan = localStorage.getItem(STORAGE.dailyPlan);
+    if (plan) {
+      document.getElementById("savedPlanPreview").innerText = plan;
+      document.getElementById("dailyPlanText").value = plan;
+    } else {
+      document.getElementById("savedPlanPreview").innerText = "No plan set for today. Write your schedule above.";
+    }
+  }
+  function saveDailyPlan() {
+    const text = document.getElementById("dailyPlanText").value;
+    localStorage.setItem(STORAGE.dailyPlan, text);
+    loadDailyPlan();
+  }
+  
+  // Reset day (archives and resets habits)
+  function forceNewDay() {
+    const habits = loadHabits();
+    const todayScore = habits.filter(v=>v===true).length;
+    const yesterdayKey = getTodayKey();
+    localStorage.setItem(`habit_archive_${yesterdayKey}`, JSON.stringify(habits));
+    const newHabits = new Array(HABITS_LIST.length).fill(false);
+    saveHabits(newHabits);
+    renderHabitsUI();
+    updateDashboardFromHabits();
+    alert("New day started! All habits reset. Keep crushing.");
+  }
+  
+  // add mock app button
+  function setupEventListeners() {
+    document.getElementById("addDsaBtn")?.addEventListener("click", () => {
+      const name = document.getElementById("dsaName").value;
+      const diff = document.getElementById("dsaDifficulty").value;
+      if (name) addDSA(name, diff);
+      document.getElementById("dsaName").value = "";
+    });
+    document.getElementById("addAppBtn")?.addEventListener("click", () => {
+      const company = document.getElementById("companyName").value;
+      const status = document.getElementById("appStatus").value;
+      if (company) addApplication(company, status);
+      document.getElementById("companyName").value = "";
+    });
+    document.getElementById("resetHabitsBtn")?.addEventListener("click", forceNewDay);
+    document.getElementById("savePlanBtn")?.addEventListener("click", saveDailyPlan);
+    document.getElementById("addMockAppBtn")?.addEventListener("click", () => {
+      addApplication("Demo Corp", "Sent");
+    });
+  }
+  
+  // navigation
+  function initNavigation() {
+    const tabs = document.querySelectorAll(".nav-tab");
+    const pages = document.querySelectorAll(".page");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const pageId = tab.getAttribute("data-page");
+        pages.forEach(p => p.classList.remove("active"));
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) targetPage.classList.add("active");
+        if (pageId === "dsa-tracker") renderDSAList();
+        if (pageId === "applications") renderAppList();
+        if (pageId === "habits") renderHabitsUI();
+        if (pageId === "dashboard") updateDashboardFromHabits();
+      });
+    });
+  }
+  
+  // initial load
+  function init() {
+    checkAndArchive();
+    renderHabitsUI();
+    renderDSAList();
+    renderAppList();
+    updateAppStats();
+    updateDashboardFromHabits();
+    loadDailyPlan();
+    setupEventListeners();
+    initNavigation();
+    // extra sync
+    setInterval(() => {
+      checkAndArchive();
+      renderHabitsUI();
+      updateDashboardFromHabits();
+      renderDSAList();
+    }, 60000);
+  }
+  
+  init();
+</script>
+</body>
+</html>
