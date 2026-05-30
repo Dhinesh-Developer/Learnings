@@ -20,8 +20,6 @@ public class UserAddress {
     private String pincode;
 
 
-
-
     public Long getId() {
         return id;
     }
