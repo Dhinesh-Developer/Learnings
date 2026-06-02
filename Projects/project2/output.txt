@@ -1,0 +1,49 @@
+Pickup Location:
+salem
+Destination:
+vbm
+Distance (KM):
+27
+Vehicle Type (Bike/Auto/Cab):
+cab
+
+Driver Assigned: Karthick
+Ride Started...
+Ride Completed...
+
+Payment Successful
+Amount Paid: ₹540.0
+
+Ride ID: 1
+Rider: Dhinesh
+Driver: Karthick
+Pickup: salem
+Destination: vbm
+Fare: ₹540.0
+Status: COMPLETED
+
+-------------------------------------
+
+Pickup Location:
+vbm
+Destination:
+elammpillai
+Distance (KM):
+5
+Vehicle Type (Bike/Auto/Cab):
+bike
+
+Driver Assigned: Karthick
+Ride Started...
+Ride Completed...
+
+Payment Successful
+Amount Paid: ₹50.0
+
+Ride ID: 1
+Rider: Dhinesh
+Driver: Karthick
+Pickup: vbm
+Destination: elammpillai
+Fare: ₹50.0
+Status: COMPLETED

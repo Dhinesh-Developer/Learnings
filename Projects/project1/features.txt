@@ -1,0 +1,10 @@
+1. Register User
+2. Login User
+3. Add Category
+4. Add Expense
+5. View Expenses
+6. Set Budget
+7. Budget Analysis
+8. Category Wise Expense Report
+9. Monthly Expense Summary
+10. Logout  

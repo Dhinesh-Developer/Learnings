@@ -1,0 +1,23 @@
+1 Register Rider
+
+2 Register Driver
+
+3 Register Vehicle
+
+4 Driver Online
+
+5 Rider Requests Ride
+
+6 Driver Assigned
+
+7 Fare Calculated
+
+8 Ride Started
+
+9 Ride Completed
+
+10 Payment Successful
+
+11 Show Ride History
+
+12 Exit

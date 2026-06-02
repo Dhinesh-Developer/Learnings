@@ -1,0 +1,191 @@
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+1
+Name: 
+kumar
+Email: 
+kumar@gmail.com
+Password: 
+kumar123
+Registeration successful!!
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+2
+Email: 
+kumar@gmail.com
+Password: 
+kumar123
+Login success!!!
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+3
+Category [categoryId=1, categoryName=food]
+Category [categoryId=2, categoryName=travel]
+Category [categoryId=3, categoryName=shopping]
+1
+Amount: 
+100
+Description
+briyani 
+Expense added succesfully!!
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+3
+Category [categoryId=1, categoryName=food]
+Category [categoryId=2, categoryName=travel]
+Category [categoryId=3, categoryName=shopping]
+3
+Amount: 
+1000
+Description
+sports shoe purchased!
+Expense added succesfully!!
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+4
+Expense [expenseId=1, amount=100.0, category=Category [categoryId=1, categoryName=food], description=briyani , user=User [userId=1, name=kumar, email=kumar@gmail.com, password=kumar123]]
+Expense [expenseId=2, amount=1000.0, category=Category [categoryId=3, categoryName=shopping], description=sports shoe purchased!, user=User [userId=1, name=kumar, email=kumar@gmail.com, password=kumar123]]
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+5
+Budget Amount: 
+2000
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+6
+Budget: 2000.0
+Expense: 1100.0
+Remaining Budget: 900.0
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+7
+Food: 100.0
+Travel: 0.0
+Shopping: 1000.0
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+3
+Category [categoryId=1, categoryName=food]
+Category [categoryId=2, categoryName=travel]
+Category [categoryId=3, categoryName=shopping]
+2
+Amount: 
+1000
+Description
+went to ooty
+Expense added succesfully!!
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+6
+Budget: 2000.0
+Expense: 2100.0
+Budget exceeded!
+Exceeded Amount: 100.0
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+8
+Logged out!!!
+========= SMART EXPENSE TRACKER ===========
+1.Register
+2.Login
+3.Add Expense
+4.View Expense
+5.Set Budget
+6.Check Budget
+7.Category Report
+8.Logout
+9.Exit
+3
+Invalid credentails?? Login First!!!
+Category [categoryId=1, categoryName=food]
+Category [categoryId=2, categoryName=travel]
+Category [categoryId=3, categoryName=shopping]
+9
