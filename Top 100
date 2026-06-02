@@ -61,3 +61,68 @@ class Solution {
 
     }
 }
+
+4. Maximum subarray
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int n = nums.length;
+        int maxSum = Integer.MIN_VALUE;
+
+        int sum = 0;
+        for(int i=0;i<n;i++){
+            sum += nums[i];
+
+            if(sum > maxSum){
+                maxSum = sum;
+            }
+
+            if(sum < 0){
+                sum = 0;
+            }
+        }
+        return maxSum;
+    }
+}
+
+5.  Merge Intervals
+
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        int n = intervals.length;
+        Arrays.sort(intervals,(a,b) -> a[0] - b[0]);
+        List<int[]> li = new ArrayList<>();
+        for(int i=0;i<n;i++){
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+
+            if(li.isEmpty() || li.get(li.size()-1)[1] < start){
+                li.add(new int[]{start,end});
+            }else{
+                li.get(li.size()-1)[1] = Math.max(li.get(li.size()-1)[1],end);
+            }
+        }
+        return li.toArray(new int[li.size()][]);
+    }
+}
+
+6. Rotate array
+
+class Solution {
+    public void rotate(int[] nums, int k) {
+        int n = nums.length;
+        k = k % n;
+        reverseArr(nums,0,n-1);
+        reverseArr(nums,0,k-1);
+        reverseArr(nums,k,n-1);
+    }
+
+    private void reverseArr(int[] nums,int start,int end){
+        while(start < end){
+            int temp = nums[start];
+            nums[start] = nums[end];
+            nums[end] = temp;
+            start++;
+            end--;
+        }
+    }
+}
