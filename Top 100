@@ -126,3 +126,69 @@ class Solution {
         }
     }
 }
+
+7. Maximum Average subarray 1
+
+class Solution {
+    public double findMaxAverage(int[] nums, int k) {
+        
+        double sum = 0;
+        for(int i=0;i<k;i++){
+            sum += nums[i];
+        }
+
+        double maxSum = sum;
+        for(int i=k;i<nums.length;i++){
+            sum = sum-nums[i-k]+nums[i];
+            maxSum = Math.max(sum,maxSum);
+        }
+
+
+        return maxSum/k;
+    }
+}
+
+8. Longest substring without repeating character
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+
+        if(s == null || s.length() == 0) return 0;
+        int maxLen = 0,left =0;
+        Set<Character> set = new HashSet<>();
+        for(int right=0;right<s.length();right++){
+            while(set.contains(s.charAt(right))){
+                set.remove(s.charAt(left));
+                left++;
+            }
+            set.add(s.charAt(right));
+            maxLen = Math.max(maxLen,right-left+1);
+        }
+        return maxLen;
+    }
+}
+
+9. Permuation in String
+
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+      int k = s1.length();
+      for(int i=0;i<=s2.length()-k;i++){
+        String sub = s2.substring(i,i+k);
+        if(isAnagram(s1,sub)){
+            return true;
+        }
+      }
+      return false;
+    }
+
+    public boolean isAnagram(String s,String t){
+        char[] ar1 = s.toCharArray();
+        char[] ar2 = t.toCharArray();
+
+        Arrays.sort(ar1);
+        Arrays.sort(ar2);
+
+        return Arrays.equals(ar1,ar2);
+    }
+}
