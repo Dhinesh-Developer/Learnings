@@ -192,3 +192,25 @@ class Solution {
         return Arrays.equals(ar1,ar2);
     }
 }
+
+10. Minimum size subarray sum
+
+class Solution {
+    public int minSubArrayLen(int target, int[] nums) {
+        int n = nums.length;
+        int minLen = Integer.MAX_VALUE;
+        int left = 0,curSum = 0;
+        for(int right = 0;right<n;right++){
+            curSum += nums[right];
+            while(curSum >= target){
+                if(right-left < minLen){
+                    minLen = right-left+1;
+                }
+                curSum -= nums[left];
+                left++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE?0:minLen;
+    }
+
+}
