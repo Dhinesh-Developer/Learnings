@@ -235,3 +235,53 @@ class Solution {
         return res;   
     }
 }
+
+12. Minimum window substring
+
+class Solution {
+    public String minWindow(String s, String t) {
+
+        if (s.length() < t.length()) return "";
+
+        int[] freqT = new int[128];   // frequency of characters in t
+        for (char c : t.toCharArray()) {
+            freqT[c]++;
+        }
+
+        int[] freqS = new int[128];   // frequency in current window
+
+        int start = 0;
+        int minLen = Integer.MAX_VALUE;
+        int startIndex = -1;
+        int count = 0; // number of matched characters
+
+        for (int end = 0; end < s.length(); end++) {
+            char c = s.charAt(end);
+            freqS[c]++;
+
+            if (freqT[c] > 0 && freqS[c] <= freqT[c]) {
+                count++;
+            }
+
+            // Try to shrink the window
+            while (count == t.length()) {
+
+                if (end - start + 1 < minLen) {
+                    minLen = end - start + 1;
+                    startIndex = start;
+                }
+
+                char leftChar = s.charAt(start);
+                freqS[leftChar]--;
+
+                if (freqT[leftChar] > 0 && freqS[leftChar] < freqT[leftChar]) {
+                    count--;
+                }
+
+                start++;
+            }
+        }
+
+        return startIndex == -1 ? "" : s.substring(startIndex, startIndex + minLen);
+    }
+}
