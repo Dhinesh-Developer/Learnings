@@ -378,3 +378,32 @@ class Solution {
        return res;
     }
 }
+
+17. trapping rain water
+
+class Solution {
+    public int trap(int[] nums) {
+        int n = nums.length;
+        int left = 0,right = n-1;
+        int leftMax = 0,rightMax = 0;
+        int total = 0;
+        while(left <= right){
+            if(nums[left] <= nums[right]){
+                if(nums[left] > leftMax){
+                    leftMax = nums[left];
+                }else{
+                    total += leftMax - nums[left];
+                }
+                left++;
+            }else{
+                if(nums[right] > rightMax){
+                    rightMax = nums[right];
+                }else{  
+                    total += rightMax - nums[right];
+                }
+                right--;
+            }
+        }
+        return total;
+    }
+}
