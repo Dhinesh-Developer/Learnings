@@ -423,3 +423,23 @@ class Solution {
         return false;
     }
 }
+
+22/6/25
+Best time to buy and sell
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        int buy = prices[0];
+        int maxProfit = 0;
+        for(int i=1;i<prices.length;i++){
+            if(prices[i] < buy){
+                buy = prices[i];
+            }
+            if(prices[i]-buy > maxProfit){
+                maxProfit = prices[i]-buy;
+            }
+        }
+        return maxProfit;
+    }
+}
