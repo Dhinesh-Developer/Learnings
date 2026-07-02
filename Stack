@@ -1,0 +1,252 @@
+1. Valid parantheses
+
+class Solution {
+    public boolean isValid(String s) {
+        int n = s.length();
+        Stack<Character> st = new Stack<>();
+        for(int i=0;i<n;i++){
+            char ch = s.charAt(i);
+            if(ch == '(' || ch == '{' || ch == '['){
+                st.push(ch);
+            }else{
+                if(st.isEmpty()) return false;
+                if((ch == ']' && st.pop() != '[') || 
+                (ch == '}' && st.pop() != '{') || 
+                (ch == ')' && st.pop() != '(')){
+                    return false;
+                }
+            }
+        }
+        return st.isEmpty();
+    }
+}
+
+2. Implement MIN stack
+
+class MinStack {
+
+    static class Pair{
+        int x;
+        int y;
+        Pair(int x,int y){
+            this.x =x;
+            this.y = y;
+        }
+    }
+
+    Stack<Pair> st;
+    public MinStack() {
+        st = new Stack<>();
+    }
+    
+    public void push(int val) {
+        int min;
+        if(st.isEmpty()){
+            min = val;
+        }else{
+            min = Math.min(val,st.peek().y);
+        }
+        st.push(new Pair(val,min));
+    }
+    
+    public void pop() {
+        st.pop();
+    }
+    
+    public int top() {
+        return st.peek().x;
+    }
+    
+    public int getMin() {
+        return st.peek().y;
+    }
+}
+
+3. Evaluate Reverse Polish Notation
+
+class Solution {
+    public int evalRPN(String[] s) {
+        int n = s.length;
+        Stack<Integer> st = new Stack<>();
+        int res = 0;
+        for(String x : s){
+            if(x.equals("+")){
+                int b = st.pop();
+                int a = st.pop();
+                res += a+b;
+            }
+            if(x.equals("+")){
+                int b = st.pop();
+                int a = st.pop();
+                res += a+b;
+            }
+            if(x.equals("+")){
+                int b = st.pop();
+                int a = st.pop();
+                res += a+b;
+            }
+        }
+
+    }
+}
+
+4. Next Greater Element
+
+class Solution {
+    public int[] nextLargerElement(int[] nums) {
+        int n = nums.length;
+        int[] nge = new int[n];
+        Stack<Integer> st = new Stack<>();
+        for(int i=n-1;i>=0;i--){
+            int val = nums[i];
+            while(!st.isEmpty() && st.peek() <= val){
+                st.pop();
+            }
+            if(st.isEmpty()){
+                nge[i] = -1;
+            }else{
+                nge[i] = st.peek();
+            }
+            st.push(val);
+
+        }
+        return nge;
+    }
+}
+
+5. Daily Temperature
+
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] ans = new int[n];
+        Stack<Integer> st = new Stack<>();
+
+        for(int i=0;i<n;i++){
+            while(!st.isEmpty() && temperatures[i] > temperatures[st.peek()]){
+                int idx = st.pop();
+                ans[idx] = i - idx;
+            }
+
+            st.push(i);
+        }
+
+        return ans;
+    }
+}
+
+6. Largest Rectangle in Histogram
+
+class Solution {
+    public int largestRectangleArea(int[] nums) {
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+
+        Stack<Integer> st = new Stack<>();
+        for(int i=0;i<n;i++){
+            if(!st.isEmpty() && nums[st.peek()] >= nums[i]){
+                st.pop();
+            }
+            left[i] = st.isEmpty()?-1:st.peek();
+            st.push(i);
+        }
+
+        st.clear();
+
+        for(int i=n-1;i>=0;i--){
+            if(!st.isEmpty() && nums[st.peek()] >= nums[i]){
+                st.pop();
+            }
+            right[i] = st.isEmpty()?n:st.peek();
+            st.push(i);
+        }
+
+        int maxArea = 0;
+
+        for(int i=0;i<n;i++){
+            int w = right[i] - left[i] -1;
+            maxArea = Math.max(maxArea,nums[i] * w);
+        }
+
+        return maxArea;
+
+    }
+}
+
+7. implement Queue using Stack
+
+class MyQueue {
+
+    private Stack<Integer> in;
+    private Stack<Integer> out;
+    public MyQueue() {
+        in = new Stack<>();
+        out = new Stack<>();
+    }
+    
+    public void push(int x) {
+        in.push(x);
+    }
+    
+    public int pop() {
+        shift();
+        return out.pop();
+    }
+    
+    public int peek() {
+        shift();
+        return out.peek();
+    }
+    
+    public boolean empty() {
+        return out.isEmpty() && in.isEmpty();
+    }
+
+    public void shift(){
+        while(out.isEmpty()){
+            while(!in.isEmpty()){
+                out.push(in.pop());
+            }
+        }
+    }
+}
+
+8. Decode String
+
+import java.util.*;
+
+class Solution {
+
+    public String decodeString(String s) {
+        Stack<Integer> st = new Stack<>();
+        Stack<StringBuilder> sst = new Stack<>();
+
+        StringBuilder cur = new StringBuilder();
+        int num = 0;
+
+        for(char ch : s.toCharArray()){
+            if(Character.isDigit(ch)){
+                num = num * 10+(ch - '0');
+            }else if(ch == '['){
+                st.push(num);
+                sst.push(cur);
+
+                num = 0;
+                cur = new StringBuilder();
+            }else if(ch == ']'){
+                int repeat = st.pop();
+                StringBuilder prev = sst.pop();
+
+                for(int i=0;i<repeat;i++){
+                    prev.append(cur);
+                }
+                cur = prev;
+            }else{
+                cur.append(ch);
+            }
+        }
+        return cur.toString();
+
+    }
+}
