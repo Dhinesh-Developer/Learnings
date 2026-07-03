@@ -1,0 +1,233 @@
+
+//1. Max Sum Subarray of size k
+
+class Solution {
+    public int maxSubarraySum(int[] arr, int k) {
+        // Code here
+        int n = arr.length;
+        int sum = 0;
+        for(int i=0;i<k;i++){
+            sum += arr[i];
+        }
+        
+        int max = sum;
+        int left = 0;
+        for(int i=k;i<n;i++){
+            sum += arr[i];
+            sum -= arr[left];
+            left++;
+            max = Math.max(sum,max);
+        }
+        return max;
+    }
+}
+
+// 2. Longest substring without repeating character
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if(s == null || s.length() == 0) return 0;
+        int maxLen = 0,left = 0;
+        Set<Character> set = new HashSet<>();
+        for(int i=0;i<s.length();i++){
+            while(set.contains(s.charAt(i))){
+                set.remove(s.charAt(left));
+                left++;
+            }
+            set.add(s.charAt(i));
+            maxLen = Math.max(maxLen,i-left+1);
+        }
+        return maxLen;
+    }
+}
+
+//3. Minimum window substring
+
+class Solution {
+
+    public String minWindow(String s, String t) {
+
+        if (s.length() < t.length()) {
+            return "";
+        }
+
+        HashMap<Character, Integer> map = new HashMap<>();
+
+        for (char ch : t.toCharArray()) {
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        }
+
+        int left = 0;
+        int count = t.length();
+
+        int minLen = Integer.MAX_VALUE;
+        int start = 0;
+
+        for (int right = 0; right < s.length(); right++) {
+
+            char r = s.charAt(right);
+
+            if (map.containsKey(r)) {
+
+                if (map.get(r) > 0) {
+                    count--;
+                }
+
+                map.put(r, map.get(r) - 1);
+            }
+
+            while (count == 0) {
+
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    start = left;
+                }
+
+                char l = s.charAt(left);
+
+                if (map.containsKey(l)) {
+
+                    map.put(l, map.get(l) + 1);
+
+                    if (map.get(l) > 0) {
+                        count++;
+                    }
+                }
+
+                left++;
+            }
+        }
+
+        return minLen == Integer.MAX_VALUE
+                ? ""
+                : s.substring(start, start + minLen);
+    }
+}
+
+//4. Sliding Window Maximum
+
+import java.util.*;
+
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || k <= 0) return new int[0];
+
+        int n = nums.length;
+        int[] res = new int[n - k + 1];
+        Deque<Integer> dq = new ArrayDeque<>(); // store indices
+        int ri = 0;
+
+        for (int i = 0; i < n; i++) {
+            // Remove indices out of current window
+            if (!dq.isEmpty() && dq.peekFirst() <= i - k) {
+                dq.pollFirst();
+            }
+
+            // Remove indices whose corresponding values are less than nums[i]
+            while (!dq.isEmpty() && nums[dq.peekLast()] < nums[i]) {
+                dq.pollLast();
+            }
+
+            dq.offerLast(i); // Add current index
+
+            // Starting from index k - 1, store results
+            if (i >= k - 1) {
+                res[ri++] = nums[dq.peekFirst()]; // front of deque is max
+            }
+        }
+        return res;
+    }
+}
+
+//5. Longest Repeating Character replacment
+
+class Solution {
+    public int characterReplacement(String s, int k) {
+
+        int[] freq = new int[256];
+        int left = 0,maxFreq = 0,res = 0;
+        for(int right=0;right<s.length();right++){
+            freq[s.charAt(right)-'A']++;
+            maxFreq = Math.max(maxFreq,freq[s.charAt(right)-'A']);
+
+            while((right-left + 1)-maxFreq > k){
+                freq[s.charAt(left)-'A']--;
+                left++;
+            }
+            res = Math.max(res,right-left+1);
+        }
+        return res;
+
+        
+        
+    }
+}
+
+// 6. Permutation in String 
+
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+      int k = s1.length();
+      for(int i=0;i<=s2.length()-k;i++){
+        String sub = s2.substring(i,i+k);
+        if(isAnagram(s1,sub)){
+            return true;
+        }
+      }
+      return false;
+    }
+
+    public boolean isAnagram(String s,String t){
+        char[] ar1 = s.toCharArray();
+        char[] ar2 = t.toCharArray();
+
+        Arrays.sort(ar1);
+        Arrays.sort(ar2);
+
+        return Arrays.equals(ar1,ar2);
+    }
+}
+
+//7.  Fruits into buckets
+
+class Solution {
+    public int totalFruit(int[] fruits) {
+        int left = 0,right = 0;
+        int n = fruits.length;
+        int maxLen = 0;
+        Map<Integer,Integer> map = new HashMap<>();
+        while(right < n){
+            map.put(fruits[right],map.getOrDefault(fruits[right],0)+1);
+            while(map.size() >= 3){
+                map.put(fruits[left],map.get(fruits[left])-1);
+                if(map.get(fruits[left])==0) map.remove(fruits[left]);
+                left++;
+            }
+            int len = right-left+1;
+            maxLen = Math.max(maxLen,len);
+            right++;
+        }
+        return maxLen;
+    }
+}
+
+//8. Count Number of Nice Subarray
+
+class Solution {
+    public int numberOfSubarrays(int[] nums, int k) {
+        return atMost(nums,k) - atMost(nums,k-1);
+    }
+
+    private int atMost(int[] nums,int k){
+        int left = 0,res =0,cnt = 0;
+        for(int right=0;right<nums.length;right++){
+            if(nums[right] % 2==1) k--;
+            while(k<0){
+                if(nums[left] % 2==1) k++;
+                left++;
+            }
+            res += right-left+1;
+        }
+        return res;
+    }
+}
