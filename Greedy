@@ -1,0 +1,182 @@
+// 1. Assign Cookies
+
+class Solution {
+    public int findContentChildren(int[] g, int[] s) {
+        int n = g.length;
+        int m = s.length;
+        Arrays.sort(g);
+        Arrays.sort(s);
+        int l=0,r=0;
+        while(l<n && r<m){
+            if(s[r] >= g[l]){
+                l++;
+            }
+            r++;
+        }
+        return l;
+    }
+}
+
+// 2. Jump game
+
+class Solution {
+    public boolean canJump(int[] nums) {
+        int reachable = 0;
+        for(int i=0;i<nums.length;i++){
+            if(i>reachable) return false;
+            reachable = Math.max(reachable,i+nums[i]);
+        }
+        return true;
+    }
+}
+
+
+// 3. Jump Game II
+
+class Solution {
+    public int jump(int[] nums) {
+        int near =0,far=0,jumps=0;
+        while(far < nums.length-1){
+            int farthest = 0;
+            for(int i=near;i<=far;i++){
+                farthest = Math.max(farthest,i+nums[i]);
+            }
+            near = far+1;
+            far = farthest;
+            jumps++;
+        }
+        return jumps;
+    }
+}
+
+//4. Gas Station
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int start = 0;
+        int total = 0;
+        int curgas = 0;
+
+        for(int i=0;i<gas.length;i++){
+            int diff = gas[i] - cost[i];
+            total += diff;
+            curgas += diff;
+
+            if(curgas < 0){
+                start = i+1;
+                curgas = 0;
+            }
+        }
+
+        if(total < 0){
+            return -1;
+        }
+
+        return start;
+    }
+}
+
+
+// 5. N meetinds in one room
+
+class Solution {
+    static class MeetingComparator implements Comparator<int[]>{
+        public int compare(int[] a,int[] b){
+            return Integer.compare(a[1],b[1]);
+        }
+    }
+    public int maxMeetings(int[] start, int[] end) {
+       int n = start.length;
+       List<int[]> meetings = new ArrayList<>();
+       for(int i=0;i<n;i++){
+        meetings.add(new int[]{start[i],end[i]});
+       }
+
+       Collections.sort(meetings,new MeetingComparator());
+       int limit = meetings.get(0)[1];
+       int cnt = 1;
+       for(int i=0;i<n;i++){
+        if(meetings.get(i)[0] > limit){
+            limit = meetings.get(i)[1];
+            cnt++;
+        }
+       }
+        return cnt;
+    }
+}
+
+// 6. Fractional Knapsack
+
+class Solution {
+    public double fractionalKnapsack(int[] val, int[] wt, long cap) {
+        int n = val.length;
+        double[][] ratio = new double[n][2];
+        for(int i=0;i<n;i++){
+            ratio[i] = new double[]{(double) val[i] / wt[i],i};
+        }
+        Arrays.sort(ratio, (a,b) -> Double.compare(b[0], a[0]));
+
+        double totalValue = 0.0;
+        for(double[] r : ratio){
+            int i = (int) r[1];
+            if(wt[i] <= cap){
+                totalValue += val[i];
+                cap -= wt[i];
+            }else{
+                totalValue += val[i] * ((double) cap / wt[i]);
+                break;
+            }
+        }
+        return Math.round(totalValue * 1e6)/1e6;
+    }
+}
+
+// 7. Minimum no. of platform required for a railway
+
+class Solution {
+    public int findPlatform(int[] Arrival, int[] Departure) {
+        int n = Arrival.length;
+        int ans = 1;
+        for(int i=0;i<n;i++){
+            int cnt = 1;
+            for(int j=0;j<n;j++){
+                if(i != j){
+                    if(Arrival[i] >= Arrival[j] && Departure[j] >= Arrival[i]){
+                        cnt++;
+                    }
+                    ans = Math.max(ans,cnt);
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+// 8. Lemonade Change
+
+class Solution {
+    public boolean lemonadeChange(int[] bills) {
+        int five =0,ten = 0;
+        for(int x : bills){
+            if(x == 5){
+                five++;
+            }else if(x == 10){
+                if(five > 0){
+                    five--;
+                    ten++;
+                }else{
+                    return false;
+                }
+            }else{
+                if(five > 0 && ten > 0){
+                    five--;
+                    ten--;
+                }else if(five >= 3){
+                    five -= 3;
+                }else{
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
